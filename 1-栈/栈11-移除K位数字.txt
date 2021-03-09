@@ -1,0 +1,29 @@
+class Solution {
+public:
+    string removeKdigits(string num, int k) {
+        vector<char> stk;//虑到栈的特点是后进先出，如果通过栈实现，则需要将栈内元素依次弹出然后进行翻转才能得到最小数。为了避免翻转操作，可以使用双端队列代替栈的实现。
+        //单调栈--递增
+        for (auto& digit: num) {//遍历字符串
+            while (stk.size() > 0 && stk.back() > digit && k) {//当栈不为空，且栈顶字符大于当前字符，且k>0(表明还可丢弃字符)
+                stk.pop_back();//出栈
+                k -= 1;//k减一
+            }
+            stk.push_back(digit);//当不符合while中条件，将该字符插入栈
+        }
+
+        for (; k > 0; --k) {//当遍历完字符后，k还大于0，要继续把k归0；需继续出栈
+            stk.pop_back();
+        }
+    //拼接字符串，设一个初值ans（目的去除首位的0）
+        string ans = "";
+        bool isLeadingZero = true;//设一个标志位，当遍历字符不为0时，设为false，不进入if语句，执行下面语句
+        for (auto& digit: stk) {
+            if (isLeadingZero && digit == '0') {//若标志位为true，且字符为0，则不录入字符串中
+                continue;
+            }
+            isLeadingZero = false;
+            ans += digit;//录入字符串
+        }
+        return ans == "" ? "0" : ans; //若为“”则输出0.否则输出ans
+    }
+};

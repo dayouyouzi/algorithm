@@ -1,0 +1,83 @@
+57. 插入区间
+给你一个 无重叠的 ，按照区间起始端点排序的区间列表。
+
+在列表中插入一个新的区间，你需要确保列表中的区间仍然有序且不重叠（如果有必要的话，可以合并区间）。
+
+
+示例 1：
+
+输入：intervals = [[1,3],[6,9]], newInterval = [2,5]
+输出：[[1,5],[6,9]]
+
+
+//步骤一：找到需要合并的区间
+找到插入区间需要插入或者合并的位置。
+
+代码如下：
+int index = 0; // intervals的索引
+while (index < intervals.size() && intervals[index][1] < newInterval[0]) {
+    result.push_back(intervals[index++]);
+}
+此时intervals[index]就需要合并的区间了
+
+//步骤二：合并区间
+合并区间还有两种情况
+
+intervals[index]需要合并，如图：
+
+
+对于这种情况，只要是intervals[index]起始位置 <= newInterval终止位置，就要一直合并下去。
+
+代码如下：
+
+
+while (index < intervals.size() && intervals[index][0] <= newInterval[1]) { // 注意防止越界
+    newInterval[0] = min(intervals[index][0], newInterval[0]);
+    newInterval[1] = max(intervals[index][1], newInterval[1]);
+    index++;
+}
+合并之后，将newInterval放入result就可以了
+
+intervals[index]不用合并，插入区间直接插入就行，如图：
+
+对于这种情况，就直接把newInterval放入result就可以了
+
+//步骤三：处理合并区间之后的区间
+合并之后，就应该把合并之后的区间，以此加入result中。
+
+代码如下：
+
+
+while (index < intervals.size()) {
+    result.push_back(intervals[index++]);
+}
+
+
+//总代码
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        vector<vector<int>> result;
+        int index = 0; // intervals的索引
+        // 步骤一：找到需要合并的区间
+        while (index < intervals.size() && intervals[index][1] < newInterval[0]) {
+            result.push_back(intervals[index++]);//index最终指向下一个区间
+        }
+
+        // 步骤二：合并区间，若合并，index最终指向合并后的下一个区间
+        while (index < intervals.size() && intervals[index][0] <= newInterval[1]) {
+            newInterval[0] = min(intervals[index][0], newInterval[0]);
+            newInterval[1] = max(intervals[index][1], newInterval[1]);
+            index++;
+        }
+        result.push_back(newInterval);//先插入合并区间
+
+        // 步骤三：处理合并区间之后的区间，index此时指向合并之后区间
+        while (index < intervals.size()) {
+            result.push_back(intervals[index++]);
+        }
+        return result;
+    }
+};
+
+

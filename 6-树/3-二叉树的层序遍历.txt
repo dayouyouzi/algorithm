@@ -1,0 +1,57 @@
+给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+ 
+
+示例：
+二叉树：[3,9,20,null,null,15,7],
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回其层序遍历结果：
+
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+
+
+
+
+思路1：bfs     queue存储节点，重点是在for循环中用ret.back().push_back(node->val)存数据
+
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector <vector <int>> ret;//相当于二维数组
+        if (!root) {
+            return ret;
+        }
+
+        queue <TreeNode*> q;//设一个队列
+        q.push(root);//先插入根节点
+        while (!q.empty()) {
+	//计算该队列，该层的长度
+            int currentLevelSize = q.size();
+	//设一个匿名vector容量
+            ret.push_back(vector <int> ());
+	//遍历每层元素
+            for (int i = 1; i <= currentLevelSize; ++i) {
+	//取出队列第一个元素，并抛出队列
+                auto node = q.front(); q.pop();
+	//把该元素的值放入vector中
+              ret.back().push_back(node->val);
+	//再判断该节点是否存在左右子孩子，若存在，
+	//则存入队列中
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+            }
+           
+        }
+        
+        return ret;
+    }
+};

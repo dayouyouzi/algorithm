@@ -1,0 +1,45 @@
+
+
+class Solution {
+public:
+    string removeDuplicateLetters(string s) {
+        vector<int> vis(26), num(26);//设两个数组，表示是否在栈中,值为1或0，和重复的次数
+        for (char ch : s) {
+            num[ch - 'a']++;//计算每个字符的重复次数
+        }
+
+        string stk;
+        for (char ch : s) {
+            if (!vis[ch - 'a']) {//如果该字符不在栈中
+                while (!stk.empty() && stk.back() > ch) {//当栈为空且栈顶字符大于此时的字符
+                    if (num[stk.back() - 'a'] > 0) {//且栈顶字符之后还存在重复
+                        vis[stk.back() - 'a'] = 0;//则出栈，且设vis为0 ，表明不在栈中
+                        stk.pop_back();
+                    } else {//若栈顶字符后无重复了，推出循环
+                        break;
+                    }
+                }
+                vis[ch - 'a'] = 1;//插入此时的字符，且设vis=1，表明该字符在栈中
+                stk.push_back(ch);
+            }
+            //
+            num[ch - 'a'] -= 1;//当此时的字符在栈中，则num-1，表明该字符减少重复一次，舍弃该字符
+        }
+        return stk;//最终返回字符串
+    }
+};
+
+
+
+
+
+
+若使用了stack<int> seq，则需要转换为string类型
+
+
+string res="";
+        while(!seq.empty()){
+           res=seq.top()+res;
+           seq.pop();
+        }
+

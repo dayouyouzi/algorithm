@@ -1,0 +1,55 @@
+数组中占比超过一半的元素称之为主要元素。给定一个整数数组，找到它的主要元素。若没有，返回-1。
+
+示例 1：
+
+输入：[1,2,5,9,5,9,5,5,5]
+输出：5
+
+思路1：投票算法
+
+class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        int m = nums[0];
+        int count = 1;
+        for(int i = 1; i <nums.size();++i){
+            if(nums[i] == m){
+                count++;
+            }else if(nums[i] != m){
+                count--;
+                if(count == 0){
+                    m = nums[i];
+                    count = 1;
+                }
+            }
+        }
+//最后所得的m一定是出现次数最多的
+//验证是否最后的m出现的个数是否大于nums.size()/2,若大于则返回m，若不大于，则返回-1
+        int k = 0;
+        for(auto& i : nums){
+            if(i == m){
+                k++;
+            }
+        }
+            if(k>nums.size() / 2){
+                return m;
+            }
+
+        
+        return -1;
+    }
+};
+
+
+思路2：哈希表
+
+unordered_map<int,int> m;
+for(auto& i : nums){
+	m[i]++;
+	if(m[i] > nums.size()/2){
+	return i;
+	}
+		}
+	
+return -1;
+

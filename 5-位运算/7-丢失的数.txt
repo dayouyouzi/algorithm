@@ -1,0 +1,58 @@
+
+给定一个包含 [0, n] 中 n 个数的数组 nums ，找出 [0, n] 这个范围内没有出现在数组中的那个数。
+
+进阶：
+
+你能否实现线性时间复杂度、仅使用额外常数空间的算法解决此问题?
+ 
+示例 1：
+
+输入：nums = [3,0,1]
+输出：2
+解释：n = 3，因为有 3 个数字，所以所有的数字都在范围 [0,3] 内。2 是丢失的数字，因为它没有出现在 nums 中。
+
+
+思路1：哈希法
+class Solution {
+public:
+	int missingNumber(vector<int>& nums) {
+		int n = nums.size();
+		unordered_set<int> set;
+		for (int val : nums) {
+			if (!set.count(val))
+				set.insert(val);
+		}
+		for (int i = 0; i <= n; ++i) {
+			if (!set.count(i))//判断i是否在set集合中
+				return i;
+		}
+		return -1;
+	}
+};
+
+
+
+思路2：异或
+
+异或运算:
+0 ^ n = n
+1 ^ n = !n
+使用一个变量依次异或nums数组中的每一位数，得到的这个中间值再去分别异或从0到n的所有数字，
+根据异或的运算规则，相同的数字都将被消除（运算完值为0），得到最终的值就是数组中丢失的元素。
+
+
+class Solution {
+public:
+	int missingNumber(vector<int>& nums) {
+		int n = nums.size();
+		int check = 0;
+		for (int val : nums) {
+			check ^= val;
+		}
+		for (int i = 0; i <= n; ++i) {
+			check ^= i;
+		}
+		return check;
+	}
+};
+

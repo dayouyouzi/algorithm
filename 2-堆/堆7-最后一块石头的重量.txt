@@ -1,0 +1,35 @@
+
+
+输入：[2,7,4,1,8,1]
+输出：1
+解释：
+先选出 7 和 8，得到 1，所以数组转换为 [2,4,1,1,1]，
+再选出 2 和 4，得到 2，所以数组转换为 [2,1,1,1]，
+接着是 2 和 1，得到 1，所以数组转换为 [1,1,1]，
+最后选出 1 和 1，得到 0，最终数组转换为 [1]，这就是最后剩下那块石头的重量。
+
+
+
+class Solution {
+public:
+    int lastStoneWeight(vector<int>& stones) {
+       
+        priority_queue<int> pq;//建立大根堆
+        for(int i = 0;i < stones.size(); i++){//依次放入堆中，自动排好序
+            pq.push(stones[i]);
+        }
+        while(pq.size() > 1){//当堆中元素个数大于等于2时，方可连续出堆两个元素
+        int x1 = pq.top();
+        pq.pop();
+        int x2 = pq.top();
+        pq.pop();
+        if(x1 > x2){//判断谁大，减谁，再次入堆，再次进行堆排序，再次出堆两个最大元素
+            pq.push(x1-x2);
+        }else{
+            pq.push(x2-x1);
+             }
+        }
+        return pq.empty()? 0:pq.top();//返回堆顶元素，此时堆中只有一个元素了
+    }
+
+};

@@ -1,0 +1,63 @@
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+说明：
+
+你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+
+示例 1:
+
+输入: [2,2,1]
+输出: 1
+
+思路：1.哈希表         2.异或
+
+哈希集
+
+若第一次出现，插入哈希集
+第二次出现，冲哈希集内删除
+最后剩下的就是那个只出现一次的数字
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        unordered_set<int> bobo;
+        int ans;
+        for(auto i : nums){
+            if(bobo.count(i))   bobo.erase(i);
+            else    bobo.insert(i);
+        }
+        for(auto j : bobo)  ans = j;
+        return ans;
+    }
+};
+
+
+
+方法一：异或运算。关于异或运算我们需要明白几个点：
+任何数 x 与 0 异或，结果为 x（恒等律）。
+任何数与自身异或，结果为 0（归零律）。
+异或运算还满足交换律与结合律。
+
+举个例子：4 ^ 1 ^ 2 ^ 1 ^ 2 = 4 ^ 1 ^ 1 ^ 2 ^ 2 = 4 ^ (1 ^ 1) ^ (2 ^ 2) = 4 ^ 0 ^ 0 = 4 ^ 0 = 4
+解题思路
+所以我们只需要设置一个变量，初始值为 nums[0]，然后与 nums 从第二位开始的每一个数进行异或运算，
+最终返回该变量即可。
+
+先放C++代码，思路简单易懂。
+
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        if (nums.size() == 1) {
+            return nums[0];
+        }
+
+        int res = nums[0];
+
+        for (int i = 1; i < nums.size(); ++i) {
+            res ^= nums[i]; // 从 nums 的第二位开始进行异或运算
+        }
+
+        return res;
+    }
+};
+

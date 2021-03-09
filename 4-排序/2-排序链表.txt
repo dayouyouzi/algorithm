@@ -1,0 +1,204 @@
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+进阶：
+
+你可以在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+ 
+
+示例 1：
+
+
+输入：head = [4,2,1,3]
+输出：[1,2,3,4]
+
+
+B 关键技巧
+(a) 技巧一：通过快慢指针找到链表中点
+需要确定链表的中点以进行两路归并。可以通过快慢指针的方法。快指针每次走两步，慢指针每次走一步。遍历完链表时，慢指针停留的位置就在链表的中点。
+以下两种找中点的方式都🉑️
+
+ ListNode slow = head;
+    ListNode fast = head.next; 
+    
+    while(fast!=null && fast.next!=null){ 
+        slow = slow.next; //慢指针走一步
+        fast = fast.next.next; //快指针走两步
+    }
+    ListNode rightHead = slow.next; //链表第二部分的头节点
+    slow.next = null; //cut 链表
+
+（b) 技巧二：断链操作
+split(l,n) 即切掉链表l的前n个节点，并返回后半部分的链表头。
+比如原来链表是dummy->1->2->4->3->NULL
+split(l,2)的操作造成：
+
+public ListNode split(ListNode head,int step){
+        if(head==null)  return null;
+        ListNode cur = head;
+        //注意这里cur.next!=null 有可能出现后半段还没到规定步长但是走完的情况
+        for(int i=1; i<step && cur.next!=null; i++){
+            cur = cur.next; 
+        }
+        ListNode right = cur.next; //right为后半段链表头
+        cur.next = null; //切断前半段
+        return right; //返回后半段链表头
+    }
+
+
+(c) 技巧三：合并两个有序链表
+
+
+public ListNode merge(ListNode h1, ListNode h2){
+        ListNode head = new ListNode(-1); //新创建一个伪头节点
+        ListNode p = head;
+        while(h1!=null && h2!=null){
+            if(h1.val < h2.val){
+                p.next = h1;
+                h1 = h1.next;
+            }
+            else{
+                p.next = h2;
+                h2 = h2.next;
+            }
+            p = p.next;           
+        }
+        //判断哪个链表还有没被比较完的值，直接把p指针指向它
+        if(h1!=null)    p.next = h1;
+        if(h2!=null)    p.next = h2;
+
+        return head.next;  //返回排序好的链表头    
+    }
+
+
+//c迭代的部分代码注释，便于理解下面c++写的代码
+class Solution {
+    public ListNode sortList(ListNode head) {
+        int length = getLength(head);
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+       
+        for(int step = 1; step < length; step*=2){ //依次将链表分成1块，2块，4块...
+            //每次变换步长，pre指针和cur指针都初始化在链表头
+            ListNode pre = dummy; 
+            ListNode cur = dummy.next;
+            while(cur!=null){
+                ListNode h1 = cur; //第一部分头 （第二次循环之后，cur为剩余部分头，不断往后把链表按照步长step分成一块一块...）
+                ListNode h2 = split(h1,step);  //第二部分头
+                cur = split(h2,step); //剩余部分的头
+                ListNode temp = merge(h1,h2); //将一二部分排序合并
+                pre.next = temp; //将前面的部分与排序好的部分连接
+                while(pre.next!=null){
+                    pre = pre.next; //把pre指针移动到排序好的部分的末尾
+                }
+            }
+        }
+        return dummy.next;
+    }
+
+
+
+
+
+
+
+
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        
+        /*
+        if(!head) return nullptr;  //次判断仅用来排除[]测试点
+        //尝试采用递归的归并排序进行解题
+        //使用快慢指针找到中间结点
+        ListNode *p,*q;
+        p=head;
+        q=head->next;
+        if(!q) return p;  //只有一个结点
+        while(q && q->next){
+            p=p->next;
+            q=q->next->next;
+        }
+        //将链表断开
+        q=p->next; 
+        p->next=nullptr;
+
+        head=sortList(head);
+        q=sortList(q);
+        return Merge(head,q);
+        */
+
+
+
+
+
+        //使用迭代归并进行排序
+        ListNode *_head=new ListNode;
+        _head->next=head;
+        int count=count_len(head);
+        ListNode *cur,*pre;
+        for(int i=1;i<count;i*=2){
+            pre=_head; cur=_head->next;  //进行初始化
+            while(cur!=nullptr){
+                ListNode *h1=cur;
+                ListNode *h2=cut_list(h1,i);
+                cur=cut_list(h2,i);
+                h1=Merge(h1,h2);
+                pre->next=h1;
+                while(pre->next){
+                    pre=pre->next;
+                }
+            }
+            //print(_head->next);
+        }
+        return _head->next;
+    }
+    //测试打印输出
+    void print(ListNode *head){
+        while(head){
+            cout<<head->val<<" ";
+            head=head->next;
+        }
+        cout<<endl;
+    }
+    //分割链表
+    ListNode* cut_list(ListNode *head,int step){
+        if(!head) return nullptr;
+        ListNode *p,*q;
+        p=head;
+        for(int i=1;i<step && p->next!=nullptr;i++){  //此处应该当心最后剩下的链表不足分割  使用p->next的优点是及时不足分割 其代码形式和能够完整分割相同
+            p=p->next;
+        }
+        q=p->next;
+        p->next=nullptr;
+        return q;
+    }
+    //获取链表的长度
+    int count_len(ListNode *head){
+        int count=0;
+        while(head){
+            head=head->next;
+            count++;
+        }
+        return count;
+    }
+    //将两个链表进行归并
+    ListNode* Merge(ListNode *head,ListNode *q){
+        ListNode *_head=new ListNode;
+        ListNode *p1,*p2,*tem;
+        p1=head; p2=q; tem=_head;
+        while(p1 && p2){
+            if(p1->val <= p2->val){
+                tem->next=p1;
+                p1=p1->next;
+            }
+            else{
+                tem->next=p2;
+                p2=p2->next;
+            }
+            tem=tem->next;
+        }
+        if(p1) tem->next=p1;
+        else tem->next=p2;
+        return _head->next;
+    }
+};

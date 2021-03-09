@@ -1,0 +1,50 @@
+对链表进行插入排序。
+
+插入排序算法：
+
+插入排序是迭代的，每次只移动一个元素，直到所有元素可以形成一个有序的输出列表。
+每次迭代中，插入排序只从输入数据中移除一个待排序的元素，找到它在序列中适当的位置，并将其插入。
+重复直到所有输入数据插入完为止。
+ 
+示例 1：
+
+输入: 4->2->1->3
+输出: 1->2->3->4
+
+
+
+class Solution {
+public:
+    ListNode* insertionSortList(ListNode* head) {
+	    if (!head || !head->next) return head;
+	    ListNode *dummyhead = new ListNode(-1);//伪头指针
+	    dummyhead->next = head;
+	    ListNode *prev = head; // prev永远指向已排好序的尾节点，断链之后把node后面的节点接在prev上
+	    ListNode *node = head->next;//用于插入比较的节点
+	    while (node){//要插入的节点是node
+		    if (node->val < prev->val){//若node节点小于排序末尾最后一个节点
+			    ListNode* temp = dummyhead;//设一个临时节点，用于从头开始遍历，寻找插入地方
+	 //这里是temp->next需要注意一下，比如1-3插入2，temp->next停在3上，temp是指在1上
+                while (temp->next->val < node->val){//temp作用:从头找到一个位置来插入node
+				    temp = temp->next; //指针后移
+			    }
+                // 因为实际操作还是在一个完整的链表上进行的
+                // （1）所以每次要断链取出一个：把要取出的node断开，把node->next接在prev上
+			    prev->next = node->next;
+                // （2）把取出的节点重新接在链表上，分两步：比如说1->3插入2
+			    node->next = temp->next; // (i) 第一步: 把1-3断链，令2指向3
+			    temp->next = node;// (ii) 第二步: 把1-2接上，令1指向2
+                // prev指向的是排好序之后的尾结点，prev->next作为下一次循环的node
+			    node = prev->next;
+		    }
+		    else{//如果node值比排好序的尾结点值还大，就不用操作，直接检查一下个node
+			    prev = prev->next;
+			    node = node->next;
+		    }
+	    }
+//这里可删除dummyhead的头节点（伪节点），减少内存消耗
+	 ListNode* res = dummyhead -> next;
+    delete dummyhead;
+        return res;
+    }
+};

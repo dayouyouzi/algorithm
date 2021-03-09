@@ -1,0 +1,48 @@
+给定两个字符串 s 和 t，它们只包含小写字母。
+
+字符串 t 由字符串 s 随机重排，然后在随机位置添加一个字母。
+
+请找出在 t 中被添加的字母。
+
+ 
+
+示例 1：
+
+输入：s = "abcd", t = "abcde"
+输出："e"
+解释：'e' 是那个被添加的字母。
+
+思路1：与题目丢失的数解题相似，但本题是字符串，一样直接异或，不用转成int型
+//直接先与s依次异或，再与t依次异或，最后得到的是多余的数
+
+class Solution {
+public:
+    char findTheDifference(string s, string t) {
+        char check =0;
+
+        for(auto& i : s){
+            check = check ^i ;
+        }
+        for(auto& j : t){
+            check = check ^j;
+        }
+        return check;
+
+    }
+};
+
+
+思路2：ASCII值
+class Solution {
+public:
+    char findTheDifference(string s, string t) {
+        int as = 0, at = 0;
+        for (char ch: s) {
+            as += ch;//可直接相加求出总的ascii值
+        }
+        for (char ch: t) {
+            at += ch;
+        }
+        return at - as;//最终返回多余的ASCII值，就是该多余字符
+    }
+};

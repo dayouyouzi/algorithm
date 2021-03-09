@@ -1,0 +1,84 @@
+class MyStack {
+public:
+
+//双队列实现
+
+    queue<int> q1;//设两个队列
+    queue<int> q2;
+    /** Initialize your data structure here. */
+    MyStack() {
+
+    }
+    
+    /** Push element x onto stack. */
+    void push(int x) {
+        q2.push(x);//先将x压入q2中,若q1不为空，则将q1中的数依次从队头出队压入q2之后
+        //后在反转q1，q2，使q1形成类似于栈
+        while(!q1.empty()){//
+            q2.push(q1.front());
+            q1.pop();
+            }
+            swap(q1,q2);
+        
+
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    int pop() {
+        int top = q1.front();//记录队头（栈顶）元素
+        q1.pop();//直接q1出队
+        return top;
+
+    }
+    
+    /** Get the top element. */
+    int top() {
+        int top = q1.front();
+        return top;
+    }
+    
+    /** Returns whether the stack is empty. */
+    bool empty() {
+        return q1.empty();//若q1无数据，就已经表明栈中无数据，业务最终的数据都保存在q1中
+        //q2为临时队列
+    }
+};
+
+
+
+//单队列实现
+class MyStack {
+public:
+    queue<int> q;
+
+    /** Initialize your data structure here. */
+    MyStack() {
+
+    }
+
+ 
+    void push(int x) {//得出队列q的大小，便于循环抛出之前的数据，放入加入的x之后
+        int n = q.size();
+        q.push(x);
+        for (int i = 0; i < n; i++) {
+            q.push(q.front());
+            q.pop();
+        }
+    }
+
+    int pop() {
+        int r = q.front();
+        q.pop();
+        return r;
+    }
+    
+    int top() {
+        int r = q.front();
+        return r;
+    }
+    
+    bool empty() {
+        return q.empty();
+    }
+};
+

@@ -1,0 +1,55 @@
+给定一个字符串S，检查是否能重新排布其中的字母，使得两相邻的字符不同。
+
+若可行，输出任意可行的结果。若不可行，返回空字符串。
+
+示例 1:
+
+输入: S = "aab"
+输出: "aba"
+示例 2:
+
+输入: S = "aaab"
+输出: ""
+
+
+class Solution {
+public:
+    string reorganizeString(string S) {
+        string res = "";
+        vector<int> counter(26,0);//记录字符出现次数
+        priority_queue<pair<int,char>> pq;//建立大根堆
+
+        // 统计字母出现的次数
+        for(auto& c: S)
+            counter[c-'a']++;
+        
+        // 遍历哈希表
+        for(int i = 0;i < 26;i++){
+            // 边界条件
+            if(counter[i] > (S.size()+1)/2)//若符合条件，则没办法间隔字符，返回空字符
+                return "";
+
+            // 把字母添加到优先队列中
+            if(counter[i] > 0) 
+                pq.push({counter[i],i+'a'});
+        }
+        
+        pair<int,char> prev(0,' ');//设置prev对组，记录出堆字符次数减一后，是否还需要再次入堆
+        
+        // 开始重构字符串
+        while(!pq.empty()){
+           
+            pair<int,char> cur = pq.top();//设一个临时对组，存入堆中最大值（a,4）
+            pq.pop();//出堆（a,4)
+            res += cur.second;//res="a"
+            cur.first--;//(a,3)
+            
+            if(prev.first > 0)//这里太精辟了，先不给prev赋值，prev肯定为0；
+                pq.push(prev);
+            prev = cur;//这里再给prev赋值，再进入下一循环（如：出堆b），肯定会出b，再判断prev.first >0，再把a入堆
+                        //巧妙的把字符间隔开来出堆
+            
+        }
+        return res;
+    }
+};

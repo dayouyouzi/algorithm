@@ -1,0 +1,86 @@
+后缀（逆波兰）表达示
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        stack<int> st;
+        for (int i = 0; i < tokens.size(); i++) {
+            if (tokens[i] == "+" || tokens[i] == "-" || tokens[i] == "*" || tokens[i] == "/") {
+                int num1 = st.top();
+                st.pop();
+                int num2 = st.top();
+                st.pop();
+                if (tokens[i] == "+") st.push(num2 + num1);
+                if (tokens[i] == "-") st.push(num2 - num1);
+                if (tokens[i] == "*") st.push(num2 * num1);
+                if (tokens[i] == "/") st.push(num2 / num1);
+            } else {
+                st.push(stoi(tokens[i]));//string->int
+            }
+        }
+        int result = st.top();
+        st.pop(); // 把栈里最后一个元素弹出（其实不弹出也没事）
+        return result;
+    }
+};
+
+//实现加减计算器
+class Solution {
+public:
+    int calculate(string s) {
+        stack<int> ss;
+        // 当前的结果
+        int res = 0;
+        // 当前符号，默认+为1， -为-1
+        int sign = 1;
+
+        int n = s.size();
+        for (int i = 0; i < n; i++)
+        {
+            // 这里只考虑 0 且范围有效
+            if (s[i] >= '0')
+            {
+                long curr = 0;
+                while (i < n && s[i] >= '0')
+                {
+                    curr = curr * 10 + s[i] - '0';
+                    i++;
+                }
+                // 因为每次都会++i，这里需要减去一个，作为当前元素判断
+               --i;
+                res += sign * curr;
+            }
+            else if (s[i] == '+')
+            {
+                sign = 1;
+            }
+            else if (s[i] == '-')
+            {
+                sign = -1;
+            }
+            else if (s[i] == '(')
+            {
+                // 把 当前值 和 符号插入到栈里
+                ss.push(res);
+                ss.push(sign);
+                res = 0;
+                sign = 1;
+            }
+            else if (s[i] == ')')
+            {
+                // 先取出符号，改变数值
+                res *= ss.top();
+                ss.pop();
+                // 类加上之前的结果
+                res += ss.top();
+                ss.pop();
+            }
+            // 忽略其他情况
+        }
+
+        return res;
+    }
+};
+
+
+
+
